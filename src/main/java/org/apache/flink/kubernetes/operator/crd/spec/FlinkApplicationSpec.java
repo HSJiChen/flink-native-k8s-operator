@@ -11,17 +11,19 @@ import java.util.Map;
 @JsonDeserialize()
 @ToString
 public class FlinkApplicationSpec implements KubernetesResource {
+
+	private String jarURI;
+	private String[] mainArgs;
+	private String entryClass;
+
+	private int parallelism;
+	private String serviceAccountName;
+
     private String imageName;
     private String imagePullPolicy;
 
-    private String jarURI;
-    private String[] mainArgs = new String[0];
-    private String entryClass;
-
-    private int parallelism;
-
-    private Resource jobManagerResource;
-    private Resource taskManagerResource;
+    private Resource jobManager;
+    private Resource taskManager;
 
     private String fromSavepoint;
     private boolean allowNonRestoredState = false;
@@ -30,7 +32,25 @@ public class FlinkApplicationSpec implements KubernetesResource {
 
     private Map<String, String> flinkConfig;
 
-    public String getImageName() {
+    private Map<String, String> logConfig;
+
+	public String getServiceAccountName() {
+		return serviceAccountName;
+	}
+
+	public Map<String, String> getLogConfig() {
+		return logConfig;
+	}
+
+	public void setServiceAccountName(String serviceAccountName) {
+		this.serviceAccountName = serviceAccountName;
+	}
+
+	public void setLogConfig(Map<String, String> logConfig) {
+		this.logConfig = logConfig;
+	}
+
+	public String getImageName() {
         return imageName;
     }
 
@@ -78,20 +98,20 @@ public class FlinkApplicationSpec implements KubernetesResource {
         this.parallelism = parallelism;
     }
 
-    public Resource getJobManagerResource() {
-        return jobManagerResource;
+    public Resource getJobManager() {
+        return jobManager;
     }
 
-    public void setJobManagerResource(Resource jobManagerResource) {
-        this.jobManagerResource = jobManagerResource;
+    public void setJobManager(Resource jobManager) {
+        this.jobManager = jobManager;
     }
 
-    public Resource getTaskManagerResource() {
-        return taskManagerResource;
+    public Resource getTaskManager() {
+        return taskManager;
     }
 
-    public void setTaskManagerResource(Resource taskManagerResource) {
-        this.taskManagerResource = taskManagerResource;
+    public void setTaskManager(Resource taskManager) {
+        this.taskManager = taskManager;
     }
 
     public Map<String, String> getFlinkConfig() {

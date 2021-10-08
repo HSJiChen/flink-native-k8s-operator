@@ -7,28 +7,41 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonDeserialize()
 @ToString
 
 public class Resource implements KubernetesResource {
-    private double cpu;
-    // 1024m, 1g
-    private String mem;
 
-    public double getCpu() {
-        return cpu;
-    }
+	private Double cpu;
+	private String mem;
 
-    public void setCpu(double cpu) {
-        this.cpu = cpu;
-    }
+	private Map<String, String> podLabels;
 
-    public String getMem() {
-        return mem;
-    }
+	public Double getCpu() {
+		return cpu;
+	}
 
-    public void setMem(String mem) {
-        this.mem = mem;
-    }
+	public void setCpu(Double cpu) {
+		this.cpu = cpu;
+	}
+
+	public String getMem() {
+		return mem;
+	}
+
+	public void setMem(String mem) {
+		this.mem = mem;
+	}
+
+	public Map<String, String> getPodLabels() {
+		return podLabels;
+	}
+
+	public void setPodLabels(Map<String, String> podLabels) {
+		this.podLabels = podLabels;
+	}
 }

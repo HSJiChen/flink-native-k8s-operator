@@ -3,19 +3,31 @@ kind: FlinkApplication
 metadata:
   namespace: default
   name: flink-example-statemachine
+  label:
+    "flinkoperator.k8s.io/skip": true
 spec:
-  imageName: registry.cn-beijing.aliyuncs.com/streamcompute/flink:1.11
-  jarURI: local:///opt/flink/examples/streaming/StateMachineExample.jar
+  jarURI: local:///opt/flink/examples/streaming/SocketWindowWordCount.jar
+  mainArgs: "--hostname 172.17.0.7 --port 9999"
+  entryClass: SocketWindowWordCount
   parallelism: 5
-  jobManagerResource:
-    mem: 4096m
-    cpu: 1.5
-  taskManagerResource:
-    mem: 2048m
-    cpu: 1
+  serviceAccountName: flink-native-k8s-operator
+  imageName: harbor.eniot.io/arch/flink:1.12.4_scala2.12_edh_3.1.4-4-dev-0916
+  imagePullPolicy: Always
   savepointsDir: file:///tmp/savepoints
   savepointGeneration: 0
+  jobManager:
+    cpu: 1
+    mem: 1024m
+    podLabels:
+      app: jobmanager
+  taskManager:
+    cpu: 2
+    mem: 1024m
+    podLabels:
+      app: taskmanager
   flinkConfig:
     taskmanager.numberOfTaskSlots: 2
     kubernetes.jobmanager.service-account: flink-native-k8s-operator
     kubernetes.container-start-command-template: "%java% %classpath% %jvmmem% %jvmopts% %logging% %class% %args%"
+  logConfig:
+    log4j-console.properties:

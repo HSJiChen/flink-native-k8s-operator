@@ -57,13 +57,15 @@ public class FlinkUtils {
 		if (spec.getParallelism() > 0) {
 			effectiveConfig.set(CoreOptions.DEFAULT_PARALLELISM, spec.getParallelism());
 		}
-		if (spec.getJobManagerResource() != null) {
-			effectiveConfig.setString(JobManagerOptions.TOTAL_PROCESS_MEMORY.key(), spec.getJobManagerResource().getMem());
-			effectiveConfig.set(KubernetesConfigOptions.JOB_MANAGER_CPU, spec.getJobManagerResource().getCpu());
+		if (spec.getJobManager() != null) {
+			effectiveConfig.setString(JobManagerOptions.TOTAL_PROCESS_MEMORY.key(), spec.getJobManager().getMem());
+			effectiveConfig.set(KubernetesConfigOptions.JOB_MANAGER_CPU, spec.getJobManager().getCpu());
+			effectiveConfig.set(KubernetesConfigOptions.JOB_MANAGER_LABELS, spec.getJobManager().getPodLabels());
 		}
-		if (spec.getTaskManagerResource() != null) {
-			effectiveConfig.setString(TaskManagerOptions.TOTAL_PROCESS_MEMORY.key(), spec.getTaskManagerResource().getMem());
-			effectiveConfig.set(KubernetesConfigOptions.TASK_MANAGER_CPU, spec.getTaskManagerResource().getCpu());
+		if (spec.getTaskManager() != null) {
+			effectiveConfig.setString(TaskManagerOptions.TOTAL_PROCESS_MEMORY.key(), spec.getTaskManager().getMem());
+			effectiveConfig.set(KubernetesConfigOptions.TASK_MANAGER_CPU, spec.getJobManager().getCpu());
+			effectiveConfig.set(KubernetesConfigOptions.TASK_MANAGER_LABELS, spec.getTaskManager().getPodLabels());
 		}
 
 		// Savepoint

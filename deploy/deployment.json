@@ -1,0 +1,132 @@
+{
+  "apiVersion": "flinkoperator.k8s.io/v1beta1",
+  "kind": "FlinkCluster",
+  "metadata": {
+    "name": "%{serviceName}",
+    "namespace": "%{namespace}",
+    "labels": {
+      "flinkoperator.k8s.io/skip": "true"
+    },
+    "annotations": {
+      "flinkoperator.k8s.io/skip": "true"
+    }
+  },
+  "spec": {
+    "flinkProperties": {
+      "web.job.operate.enable": "false",
+      "web.submit.enable": "false",
+      "taskmanager.numberOfTaskSlots": "2",
+      "akka.lookup.timeout": "20 s",
+      "fs.azure.account.key.commonfs.blob.core.chinacloudapi.cn": "%{blobKey}",
+      "fs.s3a.access.key": "%{s3AccessKey}",
+      "fs.s3a.secret.key": "%{s3SecretKey}",
+      "fs.s3a.endpoint": "%{s3Endpoint}",
+      "s3.path.style.access": "true",
+      "fs.s3a.impl": "org.apache.hadoop.fs.s3a.S3AFileSystem",
+      "fs.s3a.list.version": "1",
+      "fs.s3a.multipart.size": "64M",
+      "state.savepoints.dir": "%{stateSavepointsDir}/%{namespace}/%{serviceName}",
+      "state.checkpoints.dir": "%{stateCheckpointsDir}/%{namespace}/%{serviceName}",
+      "high-availability": "org.apache.flink.kubernetes.highavailability.KubernetesHaServicesFactory",
+      "high-availability.jobmanager.port": "6123",
+      "high-availability.storageDir": "%{stateRecoveryDir}/%{namespace}/%{serviceName}",
+      "kubernetes.cluster-id": "cluster-%{serviceName}",
+      "kubernetes.namespace": "%{namespace}",
+      "metrics.reporter.promgateway.class": "org.apache.flink.metrics.prometheus.PrometheusPushGatewayReporter",
+      "metrics.reporter.promgateway.host": "pushgateway.monitoring.svc",
+      "metrics.reporter.promgateway.port": "9091",
+      "metrics.reporter.promgateway.jobName": "%{serviceName}",
+      "metrics.reporter.promgateway.randomJobNameSuffix": "true",
+      "metrics.reporter.promgateway.groupingKey": "flink_namespace=%{namespace};application=%{serviceName}",
+      "metrics.reporter.promgateway.deleteOnShutdown": "false",
+      "metrics.reporter.promgateway.interval": "60 SECONDS",
+      "metrics.reporter.promgateway.filterLabelValueCharacters": "false",
+      "metrics.system-resource": "true",
+      "restart-strategy": "failure-rate",
+      "restart-strategy.failure-rate.max-failures-per-interval": "120",
+      "restart-strategy.failure-rate.failure-rate-interval": "1440 min",
+      "restart-strategy.failure-rate.delay": "30 s",
+      "state.backend": "filesystem",
+      "execution.checkpointing.mode": "EXACTLY_ONCE"
+    },
+    "serviceAccountName": "flink",
+    "logConfig": {
+      "log4j-console.properties": "rootLogger.level = INFO\nrootLogger.appenderRef.console.ref = ConsoleAppender\nrootLogger.appenderRef.rolling.ref = RollingFileAppender\n\nlogger.akka.name = akka\nlogger.akka.level = INFO\nlogger.kafka.name= org.apache.kafka\nlogger.kafka.level = INFO\nlogger.hadoop.name = org.apache.hadoop\nlogger.hadoop.level = INFO\nlogger.zookeeper.name = org.apache.zookeeper\nlogger.zookeeper.level = INFO\n\nappender.console.name = ConsoleAppender\nappender.console.type = CONSOLE\nappender.console.layout.type = PatternLayout\nappender.console.layout.pattern = [%d{yyyy-MM-dd HH:mm:ss.SSS}] %-5p [%t] [%traceId] %c %L - %m%n\n\nappender.rolling.name = RollingFileAppender\nappender.rolling.type = RollingFile\nappender.rolling.append = false\nappender.rolling.fileName = ${sys:log.file}\nappender.rolling.filePattern = ${sys:log.file}.%i\nappender.rolling.layout.type = PatternLayout\nappender.rolling.layout.pattern = [%d{yyyy-MM-dd HH:mm:ss.SSS}] %-5p [%t] [%traceId] %c %L - %m%n\nappender.rolling.policies.type = Policies\nappender.rolling.policies.size.type = SizeBasedTriggeringPolicy\nappender.rolling.policies.size.size=100MB\nappender.rolling.strategy.type = DefaultRolloverStrategy\nappender.rolling.strategy.max = 10\n\nlogger.netty.name = org.apache.flink.shaded.akka.org.jboss.netty.channel.DefaultChannelPipeline\nlogger.netty.level = OFF\n",
+      "log4j-cli.properties": "monitorInterval = 30\n\nrootLogger.level = debug\nrootLogger.appenderRef.file.ref = FileAppender\n\nappender.file.name = FileAppender\nappender.file.type = FILE\nappender.file.append = false\nappender.file.fileName = ${sys:log.file}\nappender.file.layout.type = PatternLayout\nappender.file.layout.pattern = %d{yyyy-MM-dd HH:mm:ss,SSS} %-5p %-60c %x - %m%n\n\nlogger.yarn.name = org.apache.flink.yarn\nlogger.yarn.level = debug\nlogger.yarn.appenderRef.console.ref = ConsoleAppender\nlogger.yarncli.name = org.apache.flink.yarn.cli.FlinkYarnSessionCli\nlogger.yarncli.level = debug\nlogger.yarncli.appenderRef.console.ref = ConsoleAppender\nlogger.hadoop.name = org.apache.hadoop\nlogger.hadoop.level = debug\nlogger.hadoop.appenderRef.console.ref = ConsoleAppender\n\nlogger.kubernetes.name = org.apache.flink.kubernetes\nlogger.kubernetes.level = debug\nlogger.kubernetes.appenderRef.console.ref = ConsoleAppender\n\nappender.console.name = ConsoleAppender\nappender.console.type = CONSOLE\nappender.console.layout.type = PatternLayout\nappender.console.layout.pattern = %d{yyyy-MM-dd HH:mm:ss,SSS} %-5p %-60c %x - %m%n\n\nlogger.hadoopnative.name = org.apache.hadoop.util.NativeCodeLoader\nlogger.hadoopnative.level = debug\n\nlogger.netty.name = org.apache.flink.shaded.akka.org.jboss.netty.channel.DefaultChannelPipeline\nlogger.netty.level = debug\n"
+    },
+    "image": {
+      "name": "%{imagePath}",
+      "pullPolicy": "Always"
+    },
+    "job": {
+      "podLabels": {
+        "app": "%{serviceName}",
+        "serving.knative.dev/service": "%{serviceName}",
+        "log-region": "serverless"
+      },
+      "jarFile": "%{jarFile}",
+      "className": "%{package}%{class}",
+      "args": [],
+      "parallelism": 2,
+      "volumeMounts": [
+        {
+          "mountPath": "/opt/flink/conf/flink-conf.yaml",
+          "subPath": "flink-conf.yaml",
+          "name": "flink-config-volume"
+        }
+      ],
+      "resources": {
+        "limits": {
+          "cpu": "1",
+          "memory": "1Gi"
+        },
+        "requests": {
+          "cpu": "100m",
+          "memory": "100Mi"
+        }
+      }
+    },
+    "jobManager": {
+      "podLabels": {
+        "app": "%{serviceName}",
+        "serving.knative.dev/service": "%{serviceName}",
+        "log-region": "serverless",
+        "timestamp": "%{timestamp}"
+      },
+      "ingress": {
+        "hostFormat": "%{serviceName}.%{host}"
+      },
+      "ports": {
+        "ui": 8081
+      },
+      "resources": {
+        "limits": {
+          "memory": "1024Mi",
+          "cpu": "200m"
+        },
+        "requests": {
+          "memory": "100Mi",
+          "cpu": "40m"
+        }
+      }
+    },
+    "taskManager": {
+      "podLabels": {
+        "app": "%{serviceName}",
+        "serving.knative.dev/service": "%{serviceName}",
+        "log-region": "serverless"
+      },
+      "replicas": 1,
+      "resources": {
+        "limits": {
+          "cpu": "1",
+          "memory": "2Gi"
+        },
+        "requests": {
+          "cpu": "60m",
+          "memory": "300Mi"
+        }
+      }
+    }
+  }
+}

@@ -13,7 +13,7 @@ import java.util.Map;
 public class FlinkApplicationSpec implements KubernetesResource {
 
 	private String jarURI;
-	private String[] mainArgs;
+	private String[] mainArgs = new String[0];
 	private String entryClass;
 
 	private int parallelism;
